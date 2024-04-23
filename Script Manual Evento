@@ -1,0 +1,116 @@
+CREATE SCHEMA IF NOT EXISTS `bdenvento`;
+
+USE bdenvento;
+
+CREATE TABLE Evento (
+IDEvento INT PRIMARY KEY,
+nomeevento VARCHAR(40),
+data_evento INT,
+local_evento VARCHAR(60),
+quantMaxIngresso_evento INT,
+valorbBase FLOAT
+);
+
+CREATE TABLE Empresa (
+cnpj	 INT PRIMARY KEY,
+noe_empresa VARCHAR(30),
+logradouro VARCHAR(60),
+bairro 	VARCHAR(50),
+cidade VARCHAR (20)
+);
+
+CREATE TABLE Telefone (
+ddd varchar(20),
+num_Telefone INT,
+FK_EMPRESA_CNPJ VARCHAR(15),
+PRIMARY KEY (ddd,num_Telefone)
+);
+
+CREATE TABLE EMRESA_EVENTO (
+FK_EMPRESSA VARCHAR (50),
+FK_EVENTO VARCHAR(50),
+FK_EMPRESA_EVENTO VARCHAR(20)
+);
+
+CREATE TABLE Cliente(
+cpf INT,
+nome VARCHAR(60),
+sobrenome VARCHAR (60),
+dtNasc DATE,
+logradouro INT,
+bairro VARCHAR (50),
+cidade VARCHAR (20),
+ddd INT,
+numtel INT,
+email VARCHAR (50)
+);
+
+CREATE TABLE Ingresso(
+codIngresso INT PRIMARY KEY,
+valorPago FLOAT,
+dtCompra DATE
+);
+
+ALTER TABLE TELEFONE ADD CONSTRAINT FK_TELEFONE_2 
+FOREIGN KEY (FK_EMPRESA_CNPJ)
+REFERENCES EMPRESA (CNPJ)
+ON UPDATE CASCADE
+ON DELETE CASCADE;
+
+ALTER TABLE EMPRESA_EVENTO ADD CONSTRAINT FK_EMPRESA_EVENTO_1
+FOREIGN KEY  (FK_EMPRESA_IDEvento)
+REFERENCES EMPRESA (IDEvento)
+ON UPDATE RESTRICT
+ON DELETE CASCADE;
+
+ALTER TABLE EMPRESA_EVENTO ADD CONSTRAINT FK_EMPRESA_EVENTO_2
+FOREIGN KEY  (FK_EMPRESA_EVENTO)
+REFERENCES EMPRESA (CNPJ)
+ON UPDATE RESTRICT
+ON DELETE RESTRICT;
+
+ALTER TABLE INGRESSO ADD CONSTRAINT FK_INGRESSO_2
+FOREIGN KEY (FK_EVENTO_IDEvento)
+REFERENCES CLIENTE
+ON UPDATE CASCADE;
+
+ALTER TABLE INGRESSO ADD CONSTRAINT FK_INGRESSO_3
+FOREIGN KEY (FK_CLIENTE_cpf)
+REFERENCES CLIENTE (cpf)
+ON UPDATE CASCADE;
+
+INSERT INTO CLIENTE (
+`cpf`,
+`nome`,
+`sobrenome`,
+`dtNasc`,
+`endereço`,
+`email`
+)
+
+values
+('cpf 01', '123.456.788-33', 'cpf 02', '789.456.123-00', 'cpf 03','456.123.789-99'),
+('Maria', 'Carla', 'Minas'),
+('Souza', 'Silva', 'Oliveira'),
+('16/01/1995','52/02/1895','15/03/1958'),
+('Rua Joana Angelica','Rua As Margaridas','Rua Alagados'),
+('Joao02@gmail.com','kkkarla@gmail.com','obrabo_delas@gmail.com');
+
+INSERT INTO EVENTO
+(
+`IDEvento`,
+`Data`,
+`Nome`,
+`Local`,
+`valorBase`,
+`qntIngresso`
+)
+
+values(
+('12546','12365','45697'),
+('16/02/2014','18/05/1965','25/04/1254'),
+('ana','loa','katia'),
+('rua marcos','rua da manga','avenida carlos gomes'),
+('12,20','15,24','58,50'),
+('20.352','54.658','57.698')                                                                      
+);
