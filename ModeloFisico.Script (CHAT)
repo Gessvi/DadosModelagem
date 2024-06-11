@@ -1,0 +1,344 @@
+CRIAÇAO DO BANCO
+INSERÇAO DE DADOS E PROCEDURES
+SELECTS E VIEWS
+CREATE SCHEMA chatonline;
+
+use chatonline;
+
+CREATE TABLE USUARIO (
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    PrimeiroNome VARCHAR(50) NOT NULL,
+    Sobrenome VARCHAR(50),
+    Username VARCHAR(50) UNIQUE,
+    DtNascimento DATE,
+    Email VARCHAR(100) NOT NULL,
+    Telefone VARCHAR(15),
+    Senha VARCHAR(50) NOT NULL,
+    Perfil_Imagem BLOB
+);
+
+CREATE TABLE AMIZADE (
+	idAmizade INT NOT NULL PRIMARY KEY auto_increment,
+    idUsuario1 INT,
+    idUsuario2 INT,
+    FOREIGN KEY (idUsuario1) REFERENCES USUARIO(idUsuario),
+    FOREIGN KEY (idUsuario2) REFERENCES USUARIO(idUsuario)
+);
+
+CREATE TABLE PREMIUM (
+    idPremium INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Perfil_Video BLOB,
+    Figurinhas_Criadas BLOB,
+    Gifs_Criados BLOB,
+    Temas_Criados BLOB,
+    FK_USUARIO_idUsuario INT,
+    FOREIGN KEY (FK_USUARIO_idUsuario) REFERENCES USUARIO(idUsuario)
+);
+
+CREATE TABLE FORUM (
+    idForum INT PRIMARY KEY AUTO_INCREMENT NOT NULL
+);
+
+CREATE TABLE TOPICOS (
+    idPostagem INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Titulo VARCHAR(50) NOT NULL,
+    Descricao VARCHAR(255),
+    Imagem BLOB,
+    Video BLOB,
+    FK_FORUM_idForum INT,
+    FOREIGN KEY (FK_FORUM_idForum) REFERENCES FORUM(idForum)
+);
+
+CREATE TABLE comenta (
+    FK_TOPICOS_idPostagem INT,
+    FK_FORUM_idForum INT,
+    FK_USUARIO_idUsuario INT,
+    PRIMARY KEY (FK_TOPICOS_idPostagem, FK_FORUM_idForum, FK_USUARIO_idUsuario),
+    FOREIGN KEY (FK_TOPICOS_idPostagem) REFERENCES TOPICOS(idPostagem),
+    FOREIGN KEY (FK_FORUM_idForum) REFERENCES FORUM(idForum),
+    FOREIGN KEY (FK_USUARIO_idUsuario) REFERENCES USUARIO(idUsuario)
+);
+
+CREATE TABLE participa_FORUM (
+    FK_USUARIO_idUsuario INT,
+    FK_FORUM_idForum INT,
+    FK_TOPICOS_idPostagem INT,
+    PRIMARY KEY (FK_USUARIO_idUsuario, FK_FORUM_idForum, FK_TOPICOS_idPostagem),
+    FOREIGN KEY (FK_USUARIO_idUsuario) REFERENCES USUARIO(idUsuario),
+    FOREIGN KEY (FK_FORUM_idForum) REFERENCES FORUM(idForum),
+    FOREIGN KEY (FK_TOPICOS_idPostagem) REFERENCES TOPICOS(idPostagem)
+);
+
+CREATE TABLE GRUPO (
+    idGrupo INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Nome_Grupo VARCHAR(100) NOT NULL,
+    DtCriacao DATE,
+    Descricao_Grupo VARCHAR(255),
+    Foto_Grupo BLOB,
+    LinkGrupo VARCHAR(255)
+);
+
+CREATE TABLE participa_GRUPO (
+    FK_USUARIO_idUsuario INT,
+    FK_GRUPO_idGrupo INT,
+    PRIMARY KEY (FK_USUARIO_idUsuario, FK_GRUPO_idGrupo),
+    FOREIGN KEY (FK_USUARIO_idUsuario) REFERENCES USUARIO(idUsuario),
+    FOREIGN KEY (FK_GRUPO_idGrupo) REFERENCES GRUPO(idGrupo)
+);
+
+CREATE TABLE MENSAGENS (
+    idMensagen INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    mensagen VARCHAR(500),
+    data_envio TIMESTAMP,
+    enviado_por INT NOT NULL,
+    recebido_por INT,
+    Localizacao VARCHAR(255),
+    Audio BLOB,
+    Link VARCHAR(255),
+    Arquivo BLOB,
+    Voz BLOB,
+    Imagem BLOB,
+    Video BLOB,
+    Ligacao_Video BLOB,
+    Ligacao_Audio BLOB,
+    Figurinhas BLOB,
+    Agenda_Eventos_Grupo BLOB,
+    Enquete_Grupo INT,
+    FOREIGN KEY (enviado_por) REFERENCES USUARIO(idUsuario),
+    FOREIGN KEY (recebido_por) REFERENCES USUARIO(idUsuario)
+);
+
+CREATE TABLE CONVERSA_PRIVADO (
+    FK_MENSAGENS_idMensagen INT,
+    FK_USUARIO_enviado INT,
+    FK_USUARIO_recebido INT,
+    PRIMARY KEY (FK_MENSAGENS_idMensagen, FK_USUARIO_enviado, FK_USUARIO_recebido),
+    FOREIGN KEY (FK_MENSAGENS_idMensagen) REFERENCES MENSAGENS(idMensagen),
+    FOREIGN KEY (FK_USUARIO_enviado) REFERENCES USUARIO(idUsuario),
+    FOREIGN KEY (FK_USUARIO_recebido) REFERENCES USUARIO(idUsuario)
+);
+
+CREATE TABLE CONVERSA_GRUPO (
+    FK_GRUPO_idGrupo INT,
+    FK_MENSAGENS_idMensagen INT,
+    FOREIGN KEY (FK_GRUPO_idGrupo) REFERENCES GRUPO(idGrupo),
+    FOREIGN KEY (FK_MENSAGENS_idMensagen) REFERENCES MENSAGENS(idMensagen)
+);
+
+CREATE TABLE USUARIO_EXCLUIDO (
+    idUsuario INT PRIMARY KEY,
+    PrimeiroNome VARCHAR(50) NOT NULL,
+    Sobrenome VARCHAR(50),
+    Username VARCHAR(50) UNIQUE,
+    DtNascimento DATE,
+    Email VARCHAR(100) NOT NULL,
+    Telefone VARCHAR(15),
+    Data_Exclusao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+use chatonline;
+
+-- TESTE PRA GRUPO.................................................................................................................
+
+INSERT INTO GRUPO (Nome_Grupo, DtCriacao, Descricao_Grupo, Foto_Grupo, LinkGrupo)
+VALUES ('Grupo do Senai', Curdate(), 'SENAI NOTICIAS, ATUALIZACOES, AULAS E TUDO MAIS', NULL, 'http://chatonline.com.br/invite/grupodosenai');
+
+INSERT INTO USUARIO (PrimeiroNome, Sobrenome, Username, DtNascimento, Email, Telefone, Senha)
+VALUES 
+("Felipe", "Costa", "Felipe12", '2005-03-12', "felipecosta@gmail.com", "+557198564-3187", "felps123"), 
+("Lana", "Del Rey", "Lana.DR", '1985-06-21', "L.DelRey@gmail.com", "+551190987-6543", "summertime456"),
+("Jeon", "JungKook", "Jk", '1997-09-01', 'J.JK@gmail.com' , "+558598234-5678", 'amry972'),
+("Ariel", "Santana", "arizinha123", '2001-09-15', 'arielkaprinces@gmail.com' , "+552197788-5558", 'postoma587'),
+("Amanda", "Caroline", "carol_ofc", '2000-08-10', 'amanda123@hotmail.com' , "+557598755-7858", 'amandinha2000'),
+("Tatiana", "Santos", "tatizin", '1985-07-05', 'tatisan@gmail.com' , "+557398884-5966", 'tati5797'),
+("Vitor", "Senra", "vtz_sen", '2002-07-22', 'vitinho@gmail.com' , "+557198559-6878", 'vtor58#'),
+("Arthur", "Horonato", "arthur_hrt", '2005-07-25', 'hornatoart@gmail.com' , "+551199894-8857", 'thur@97'),
+("Thiago", "Exlcuido", "ttEX", '2000-02-20', 'thiago_ex@gmail.com', "+55999999-9999", 'MEEXCLUA'),
+('João', 'Saiu', 'SaidoGrupo', '1990-01-01', 'joao@example.com', '123456789', 'saindo');
+
+INSERT INTO participa_GRUPO (FK_USUARIO_idUsuario, FK_GRUPO_idGrupo)
+VALUES 
+(1, 1),
+(3, 1),
+(5, 1),
+(7, 1),
+(10, 1);
+
+INSERT INTO MENSAGENS (mensagen, data_envio, enviado_por, recebido_por)
+VALUES 
+("Bom diaa, alguem fez a atividade de cristiane?", Curdate(), 1, null),
+("Tava tentando fazer, mas ñ consegui", Curdate(), 5, null),
+("Tbm n, qr call pra tentar fazer?", Curdate(), 3, null),
+("Pode ser, bora geral", Curdate(), 7, null);
+
+INSERT INTO CONVERSA_GRUPO (FK_GRUPO_idGrupo, FK_MENSAGENS_idMensagen)
+VALUES 
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4);
+
+-- ...................................................................................................................................
+
+-- AMIZADE ENTRE 4,2; 8,6; 
+
+INSERT INTO AMIZADE (idUsuario1, idUsuario2) VALUES (2, 4);
+INSERT INTO AMIZADE (idUsuario1, idUsuario2) VALUES (6, 8);
+
+-- ...................................................................................................................................
+
+-- TESTE PRA PRIVADO.................................................................................................................
+
+-- CONVERSA 1
+INSERT INTO MENSAGENS (mensagen, data_envio, enviado_por, recebido_por)
+VALUES 
+('Olá, bom dia Ariel', curdate(), 2, 4),
+("Bom dia, tudo bem Lana?", curdate(), 4, 2),
+('Tudo sim e contigo?', curdate(), 2, 4),
+("Vou bem sim, Obrigada!", curdate(), 4, 2);
+
+INSERT INTO CONVERSA_PRIVADO (FK_MENSAGENS_idMensagen, FK_USUARIO_enviado, FK_USUARIO_recebido)
+VALUES
+(5, 2, 4),
+(6, 4, 2),
+(7, 2, 4),
+(8, 4, 2);
+
+-- CONVERSA 2
+INSERT INTO MENSAGENS (mensagen, data_envio, enviado_por, recebido_por)
+VALUES 
+('Concurso da prefeitura', curdate(), 6,8),
+("Se increva", curdate(), 6, 8),
+('Viu', curdate(), 8, 6);
+
+INSERT INTO CONVERSA_PRIVADO (FK_MENSAGENS_idMensagen, FK_USUARIO_enviado, FK_USUARIO_recebido)
+VALUES 
+(9, 6, 8),
+(10, 6, 8),
+(11, 8, 6);
+
+-- VIEW............................................................................................................
+
+-- CONSULTAR O USERNAME, EMAIL E TELEFONE DO USUARIO PREMIUM
+CREATE VIEW vw_usuario_premium AS
+SELECT u.Username, u.Email, u.Telefone 
+FROM USUARIO AS u
+INNER JOIN PREMIUM AS p ON u.idUsuario = p.FK_USUARIO_idUsuario;
+
+-- CONSULTA A IDADE DOS USUARIOS A PARTIR DA DATA DE NASCIMENTO
+CREATE VIEW vw_usuario_idade AS
+SELECT Username, PrimeiroNome, Sobrenome, DtNascimento, TIMESTAMPDIFF(YEAR, DtNascimento, CURDATE()) AS Idade
+FROM USUARIO;
+
+-- CONSULTAR A DATA DE ENVIO, QUEM ENVIOU E QUEM RECEBEU A MENSAGEM, APENAS PARA TEXTO
+CREATE VIEW vw_usuario_mensagem_texto AS
+SELECT mensagen AS Mensagem, enviado_por AS EnviadoPor, data_envio AS DataEnvio, recebido_por AS RecebidoPor
+FROM MENSAGENS;
+
+-- ..................................................................................................................................
+
+-- PROCEDURES........................................................................................................................
+
+-- PROCEDURE DE EXCLUSAO E ADIÇAO DOS DADOS DO EXCLUIDO EM UMA TABELA DE BACKUP
+DELIMITER //
+CREATE PROCEDURE ExcluirUsuario(IN idUsuarioExcluir INT)
+BEGIN
+    IF EXISTS (SELECT 1 FROM USUARIO WHERE idUsuario = idUsuarioExcluir) THEN
+        INSERT INTO USUARIO_EXCLUIDO (idUsuario, PrimeiroNome, Sobrenome, Username, DtNascimento, Email, Telefone, Data_Exclusao)
+        SELECT idUsuario, PrimeiroNome, Sobrenome, Username, DtNascimento, Email, Telefone, CURRENT_TIMESTAMP
+        FROM USUARIO
+        WHERE idUsuario = idUsuarioExcluir;
+        DELETE FROM USUARIO WHERE idUsuario = idUsuarioExcluir;
+    
+        SELECT 'Usuário excluído com sucesso.';
+    ELSE
+        SELECT 'Usuário não encontrado.';
+    END IF;
+END //
+DELIMITER ;
+
+-- ..............................................................................................................................
+
+-- TRIGGER................................................................................................................
+
+-- DIMINUIR A QUANTIDADE DE USUÁRIOS TODA VEZ QUE ALGUÉM SAIR DO GRUPO
+DELIMITER //
+CREATE TRIGGER usuario_sai_grupo
+AFTER DELETE ON participa_GRUPO
+FOR EACH ROW
+BEGIN
+    DECLARE quant_atual INT;
+    SELECT COUNT(*) INTO quant_atual
+    FROM participa_GRUPO
+    WHERE FK_GRUPO_idGrupo = OLD.FK_GRUPO_idGrupo;
+        SET @msg = CONCAT('Quantidade atual de usuários no grupo: ', quant_atual);
+END //
+DELIMITER ;
+
+-- ..............................................................................................................................
+
+-- FUNCTION........................................................................................................................
+
+-- SABER A QUANTIDADE DE AMIGOS
+DELIMITER //
+CREATE FUNCTION obter_quantidade_amigos(user_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE quant_amigos INT;
+    SELECT COUNT(*)
+    INTO quant_amigos
+    FROM AMIZADE
+    WHERE idUsuario1 = user_id OR idUsuario2 = user_id;
+
+    RETURN quant_amigos;
+END //
+DELIMITER ;
+
+use chatonline;
+
+SELECT * FROM USUARIO;
+SELECT * FROM USUARIO_EXCLUIDO;  -- testar apos procedure
+
+-- Chat privado
+
+SELECT M.*
+FROM MENSAGENS M
+INNER JOIN CONVERSA_PRIVADO CP ON M.idMensagen = CP.FK_MENSAGENS_idMensagen
+WHERE (CP.FK_USUARIO_enviado = 2 AND CP.FK_USUARIO_recebido = 4)
+   OR (CP.FK_USUARIO_enviado = 4 AND CP.FK_USUARIO_recebido = 2);
+-- 6,8 tambem 
+SELECT M.*
+FROM MENSAGENS M
+INNER JOIN CONVERSA_PRIVADO CP ON M.idMensagen = CP.FK_MENSAGENS_idMensagen
+WHERE (CP.FK_USUARIO_enviado = 6 AND CP.FK_USUARIO_recebido = 8)
+   OR (CP.FK_USUARIO_enviado = 8 AND CP.FK_USUARIO_recebido = 6);
+   
+SELECT * FROM AMIZADE;
+
+
+-- Grupo 
+SELECT * FROM GRUPO;
+
+SELECT * FROM participa_GRUPO;
+
+SELECT M.*
+FROM MENSAGENS M
+INNER JOIN CONVERSA_GRUPO CG ON M.idMensagen = CG.FK_MENSAGENS_idMensagen
+WHERE CG.FK_GRUPO_idGrupo = 1;
+
+
+-- View
+SELECT * FROM vw_usuario_idade;
+SELECT * FROM vw_usuario_mensagem_texto;
+SELECT * FROM vw_usuario_premium;
+
+-- Procedure
+CALL ExcluirUsuario(9);
+
+-- Trigger
+DELETE FROM participa_GRUPO WHERE FK_USUARIO_idUsuario = 10 AND FK_GRUPO_idGrupo = 1; SELECT @msg;
+
+-- Function
+SELECT obter_quantidade_amigos(2);
+
